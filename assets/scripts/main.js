@@ -24,6 +24,9 @@ function getRecipesFromStorage() {
 	// A9. TODO - Complete the functionality as described in this function
 	//           header. It is possible in only a single line, but should
 	//           be no more than a few lines.
+	const recipes_str = localStorage.getItem('recipes');
+	return JSON.parse(recipes_str);
+
 }
 
 /**
@@ -39,6 +42,12 @@ function addRecipesToDocument(recipes) {
 	//            create a <recipe-card> element for each one, and populate
 	//            each <recipe-card> with that recipe data using element.data = ...
 	//            Append each element to <main>
+	const main_element = document.querySelector('main');
+	for(const recipe of recipes){
+		let r = document.createElement("recipe-card");
+		r.data = recipe;
+		main_element.append(r);
+	}
 }
 
 /**
@@ -51,6 +60,7 @@ function saveRecipesToStorage(recipes) {
 	// B1. TODO - Complete the functionality as described in this function
 	//            header. It is possible in only a single line, but should
 	//            be no more than a few lines.
+	localStorage.setItem('recipes', JSON.stringify(recipes));
 }
 
 /**
@@ -76,4 +86,28 @@ function initFormHandler() {
 	// Steps B12 & B13 will occur inside the event listener from step B11
 	// B12. TODO - Clear the local storage
 	// B13. TODO - Delete the contents of <main>
+	let form_element = document.querySelector("form");
+	let main_element = document.querySelector('main');
+	let clear_button = document.querySelector('button.danger');
+	form_element.addEventListener('submit', function(event) {
+		let form_data = new FormData(form_element);
+		let recipe_object = {};
+		for (const [key, value] of form_data.entries()) {
+			recipe_object[key] = value;
+		}
+		let rc = document.createElement("recipe-card");
+		rc.data = recipe_object;
+		main_element.append(rc);
+		let recipes = getRecipesFromStorage();
+		recipes.push(recipe_object);
+		saveRecipesToStorage(recipes);
+
+
+	});
+	clear_button.addEventListener('click', function(event) {
+		localStorage.clear();
+		main_element.innerHTML = '';
+	});
+
+
 }
